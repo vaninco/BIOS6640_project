@@ -8,7 +8,8 @@
 
 library(EpiWeek)
 
-# go to http://rap.ucar.edu/staff/monaghan/colborn/mozambique/daily/v2/
+# using the Google Chrome browser, go to 
+# http://rap.ucar.edu/staff/monaghan/colborn/mozambique/daily/v2/
 # highlight all the files and copy them to the clipboard
 
 files = read.table(file = "clipboard")
@@ -63,19 +64,23 @@ merge_data2 = data.frame(agg_data2, incidence)
 
 # cleaning it up
 
-merge_data2 = merge_data2[, c(1, 2, 4:9, 13:20)]
+merge_data2 = merge_data2[, c(1, 2, 4:9, 12:19)]
 
 # creating incidence columns
 
-merge_data2 = data.frame(merge_data2, "incidence" = ((merge_data2$cases / merge_data2$u5total) * 1000), "incidence.round" = round((merge_data2$cases / merge_data2$u5total) * 1000)))
+merge_data2 = data.frame(merge_data2, "incidence" = ((merge_data2$cases / merge_data2$u5total) * 1000), 
+    "incidence.round" = round(((merge_data2$cases / merge_data2$u5total) * 1000)))
 
 # incidence lagged by 2 weeks
-merge_data_lag = data.frame(merge_data2, "lag.incidence2" = unlist(by(merge_data2, merge_data2$District, function(x) c(NA, NA, head(x$incidence, -2)))))
+merge_data_lag = data.frame(merge_data2, 
+    "lag.incidence2" = unlist(by(merge_data2, merge_data2$District, function(x) c(NA, NA, head(x$incidence, -2)))))
 
 # incidence lagged by 4 weeks
-merge_data_lag = data.frame(merge_data_lag, "lag.incidence4" = unlist(by(merge_data_lag, merge_data_lag$District, function(x) c(rep(NA, 4), head(x$incidence, -4)))))
+merge_data_lag = data.frame(merge_data_lag, 
+    "lag.incidence4" = unlist(by(merge_data_lag, merge_data_lag$District, function(x) c(rep(NA, 4), head(x$incidence, -4)))))
 
 # incidence lagged by 8 weeks
-merge_data_lag = data.frame(merge_data_lag, "lag.incidence8" = unlist(by(merge_data_lag, merge_data_lag$District, function(x) c(rep(NA, 8), head(x$incidence, -8)))))
+merge_data_lag = data.frame(merge_data_lag, 
+    "lag.incidence8" = unlist(by(merge_data_lag, merge_data_lag$District, function(x) c(rep(NA, 8), head(x$incidence, -8)))))
 
-
+write.table(merge_data_lag, "merge_data_lag.csv", sep = ",")
